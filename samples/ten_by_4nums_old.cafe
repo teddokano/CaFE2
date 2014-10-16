@@ -1,0 +1,257 @@
+#
+#  0から9までの4つの数字を1度ずつ+-*/の計算を行うことによって10を作り出すゲームの答えを求める．
+#
+#	関数「ten_by_4nums」はスタック上の4つの数値をとり，この4つの数字でできる24通りのすべての順列を作り出す．
+#		一つの順列ができる度に，関数「ten」を呼び出す．
+# 
+#	関数「ten」はスタック上の4つの数値をとり，この順番に従った計算を行う．数値の計算は64通りあるが，これを
+#		すべて行ってみて，10になるものを発見すると，その計算式を表示する．10になるまでに分数的な過程を
+#		経るものはその表示も行う．
+#		(A+B)*(C+D)のような計算を行うために64回の計算の中で，最初の演算の結果を「rot」する計算を追加した．
+#
+#	このプログラムはcafeの可能性を確認する目的だけのために作成された．速度的な最適化は一切行われていない．
+#
+#	01-Sep-2006
+#
+
+#"ten_by_4nums" package			# to set all these definitions are defined 
+
+
+:get_operator
+		"+-*/"
+		swap
+		nth_char
+;
+
+
+:ten
+	4 npush	
+	3 times gs
+	>four_numbers		
+		
+	{
+		cl
+		0 >counter
+		
+		64 times 
+		:@
+			### make calculation
+			<counter  1 / get_operator
+			<counter  4 / get_operator
+			<counter 16 / get_operator
+			2 times glue
+			>calc_base
+			
+			### get 4 numbers
+			<four_numbers eval 
+			
+			<calc_base >calc
+			<calc eval check_the_number
+			
+			cl
+
+			### get 4 numbers
+			<four_numbers eval 
+			
+			<calc_base "rot" 1 nth_insert_word >calc
+			<calc eval check_the_number
+
+			cl
+			
+			### get 4 numbers
+			<four_numbers eval 
+			
+			<calc_base 
+			1 try_swap >calc
+			<calc <calc_base compare if p 'pop <calc eval check_the_number'
+
+			cl
+						
+			
+			### get 4 numbers
+			<four_numbers eval 
+			
+			<calc_base 
+			2 try_swap >calc
+			<calc <calc_base compare if p 'pop <calc eval check_the_number'
+
+			cl
+						
+			
+			### get 4 numbers
+			<four_numbers eval 
+			
+			<calc_base
+			2 try_swap
+			>calc_base <calc_base
+			1 try_swap
+			>calc
+			<calc eval check_the_number
+
+			cl
+						
+			
+			<counter 1+ >counter
+		;
+		
+	}
+;
+
+
+:try_swap
+	>position
+	>calc_b
+	
+	<calc_b < position nth_word >op
+	<op "-" compare
+	<op "/" compare
+	or
+
+	ifelse p
+	:@
+		pop
+		<calc_b
+		"swap" <position nth_insert_word
+	;
+	:@
+		pop
+		<calc_b
+	;
+;
+
+
+:check_the_number
+	dup 10 compare if t   ## need to use "compare" to make sure the relult is INTEGER
+	:@
+		[
+			<four_numbers print ^
+			" " print ^
+			<calc print ^
+			"\n" print ^
+		]
+	;
+			
+	pop
+
+	10.0 compare if t   ## need to use "compare" to make sure the relult is INTEGER
+	:@
+		[
+			<four_numbers print ^
+			" " print ^
+			<calc print ^
+			"  (fractional)\n" print ^
+		]
+	;
+;
+
+
+:nth_word (s i -- c)
+		>index
+		>str
+		
+		{
+			<str
+			s2w depth >n
+			<n <index <n % - times rot
+			<n 1- times pop
+		}
+;
+
+
+
+:nth_insert_word
+	>pos >str >base 
+	{
+		<base
+		s2w depth >n 
+		<n <pos - times rot 
+		<str 
+		<pos 1+ times rot 
+		<n times gs 
+	}
+;
+
+
+:ten_by_4nums
+
+	:/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ; 
+
+	3 times 
+	:@
+		rot  ten
+		rot  ten
+		rot  ten
+		swap ten
+	;
+
+	rot rot
+	swap 
+	rot rot
+
+	3 times 
+	:@
+		rot  ten
+		rot  ten
+		rot  ten
+		swap ten
+	;
+
+	forget /
+;
+
+
+
+:permutation_test
+
+1 2 3 4
+
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+		
+		rot 
+		rot 
+		swap 
+		rot 
+		rot 
+		
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+		rot  ,
+		rot  ,
+		rot  ,
+		swap ,
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### variable_test.cafe
+
+"c0" global variable
+"c1" global variable
+
+"global"	> c0
+"variable"	> c1
+
+< c0 < c1 " " swap glue glue
+
+"global variable"
+compare
+ifelse true '"PASS" .' '"FAIL" .'

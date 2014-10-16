@@ -1,0 +1,67 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/test_utilities.cafe
+
+"test_files" package
+
+"~/coding/CaFE2/test_files/" cd
+
+"loading test_utilities.cafe\n" print ^ 
+
+"overall_error_status" global variable	
+
+:test_utilities_loaded;
+
+:test_utilities_initialize
+	0 >overall_error_status
+;test_utilities_initialize
+
+:same? 
+	compare ifelse true '" PASS" print ^' '" FAIL" print ^ 1 >overall_error_status' pop;
+
+:test_name "\n  *** testing %-30s : " format_print ;
+
+:put_stack_into_string 
+	" {" >str
+	reverse
+	
+	depth times 
+	:@
+		type "STACK" compare 
+		ifelse t 
+		:@
+			pop 
+			=target put_stack_into_string
+			}
+			<str swap gs >str
+		;
+		:@
+			pop
+			string_w_quote <str swap gs >str
+		;
+	;
+	
+	"k}" <str swap gs >str
+	<str
+;
+
+:string_w_quote
+	type "STRING" compare
+	ifelse t 'pop quote' 'pop string'
+;
+
+:oerall_result
+	<overall_error_status
+	ifelse z 
+	:@ "\n                          ===== OVERALL RESULT \"PASS\" =====\n" print ^ "PASS";
+	:@ "\n                          ===== OVERALL RESULT \"FAIL\" =====\n" print ^ "FAIL";
+;
+

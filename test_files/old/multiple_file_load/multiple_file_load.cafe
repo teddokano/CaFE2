@@ -1,0 +1,22 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/multiple_file_load/multiple_file_load.cafe
+
+:multiple_file_load;
+
+#####
+#####	test start
+#####
+
+cl
+
+"*.cafe" use
+

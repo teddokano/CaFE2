@@ -1,0 +1,121 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/_test_file_prototype.cafe
+
+"test_files" package
+
+"~/coding/CaFE2/test_files/" cd
+
+"loading/running functions.cafe" print ^ 
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+test_utilities_initialize
+
+"token replace by stack" test_name
+
+	fisdef _test_function_name_ if t 'forget _test_function_name_'
+
+	"_test_function_body_"
+	"_test_function_name_"
+
+	:& &;
+
+	fisdef _test_function_name_ 1 same?
+	fbody _test_function_name_ "_test_function_body_" same?
+
+
+
+"command \"frename\"" test_name
+
+	frename _test_function_name_ _test_function_name2_
+
+	fisdef _test_function_name_ 0 same?
+	fisdef _test_function_name2_ 1 same?
+
+
+"command \"fdelete\" and \"forget\"" test_name
+
+	:_test_function_name3_;
+	:_test_function_name4_;
+
+	cl	fisdef _test_function_name2_
+		fisdef _test_function_name3_
+		fisdef _test_function_name4_
+
+		put_stack_into_string	
+		" { 1 1 1 k}" 
+		same?
+		
+	fdelete _test_function_name3_
+
+	cl	fisdef _test_function_name2_
+		fisdef _test_function_name3_
+		fisdef _test_function_name4_
+
+		put_stack_into_string	
+		" { 1 0 1 k}"
+		same?
+
+	forget _test_function_name2_
+
+	cl	fisdef _test_function_name2_
+		fisdef _test_function_name3_
+		fisdef _test_function_name4_
+
+		put_stack_into_string	
+		" { 0 0 0 k}"
+		same?
+
+"command \"^\"" test_name
+
+	100 23
+	: _test_function_name_ ^ ^ +;
+
+	fbody _test_function_name_ "^ ^ +" same?
+	_test_function_name_ 123 same?
+
+
+"recursive call" test_name
+
+	<$$RECURSIVE_LIMIT >previous_value
+	2000 >$$RECURSIVE_LIMIT
+
+	"count" global variable
+	: _test_recursive_call_  if t '<count 1+ >count 1- _test_recursive_call_' ;
+
+		10 >repeat
+		0 >count
+		cl <repeat _test_recursive_call_
+		<count <repeat same?
+
+		100 >repeat
+		0 >count
+		cl <repeat _test_recursive_call_
+		<count <repeat same?
+
+	<previous_value >$$RECURSIVE_LIMIT
+
+oerall_result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,53 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/test_utilities.cafe
+
+"test_files" package
+
+"~/coding/CaFE2/test_files/" cd
+
+"running tests.cafe\n" print ^ 
+
+forget func_base
+reload_init_files
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+
+	test_utilities_initialize
+
+
+	SUPPRESS_WARN >$$MESSAGE_LEVEL
+
+		"controls.cafe"							use		>controls
+		"variable_test.cafe"					use		>variable_test
+		"string_and_stack_operations.cafe"		use		>string_and_stack_operations
+		"fileop.cafe"							use		>fileop
+		"functions.cafe"						use		>functions
+
+	SUPPRESS_OFF >$$MESSAGE_LEVEL
+
+cl
+
+	<controls
+	<variable_test
+	<string_and_stack_operations
+	<fileop
+	<functions
+
+put_stack_into_string 
+" { \"PASS\" \"PASS\" \"PASS\" \"PASS\" \"PASS\" k}" 
+compare ifelse t "PASS" "FAIL" swap pop 
+
+"***********************************************************\n" print ^
+"********** \"tests.cafe\" completed. result : " swap glue " **********\n" glue print ^
+"***********************************************************\n" print ^
+
+1 >$$USE_HISTORY

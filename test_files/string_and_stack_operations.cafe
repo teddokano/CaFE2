@@ -1,0 +1,89 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/string_and_stack_operations.cafe
+"loading/running string_and_stack_operations.cafe" print ^ 
+
+"test_files" package
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+test_utilities_initialize
+
+"command \"string\"" test_name
+	"%d" >$$FORMAT_INT$
+	"%lg" >$$FORMAT_FLOAT$
+
+	cl		12345678 string
+			-12345678 string
+			pi -1 * string
+			"0x%08X" >$$FORMAT_INT$
+			12345678 string
+			"%d" >$$FORMAT_INT$
+			"sample string" string
+			put_stack_into_string
+			" { \"12345678\" \"-12345678\" \"-3.14159\" \"0x00BC614E\" \"sample string\" k}"
+			 same?
+
+"command \"s2cn\"" test_name
+
+	cl		"9876543210"  3 s2cn 
+			"9876543210" -3 s2cn 
+			put_stack_into_string 
+			" { \"9\" \"8\" \"7\" \"6543210\" \"9876543\" \"2\" \"1\" \"0\" k}" same?	
+
+"command \"s2wn\"" test_name
+
+	cl		"9 8 7 6 5 4 3 2 1 0"  3 s2wn
+			"9 8 7 6 5 4 3 2 1 0" -3 s2wn
+			put_stack_into_string
+			" { \"9\" \"8\" \"7\" \" 6 5 4 3 2 1 0\" \"9 8 7 6 5 4 3\" \"2\" \"1\" \"0\" k}" same?	
+	
+"command \"strwc\"" test_name
+
+	cl		:str_sample "living is easy with eyes closed. misunderstanding all you see.";
+			:str_sample2 "Let me take you down. 'Cos I'm going to strawberry fields.\nNothing is real. And nothing to get hang about.";
+			str_sample strwc
+			10 same?
+			str_sample2 strwc
+			20 same?
+
+"command \"quote\"" test_name
+
+	cl		"abc\"def\"ghi\"jkl\\\"mno\\\"pqr\"stu'vwx'yz" quote dup >tmp
+			"\"abc\\\"def\\\"ghi\\\"jkl\\\\\\\"mno\\\\\\\"pqr\\\"stu'vwx'yz\"" same?
+			<tmp eval
+			"abc\"def\"ghi\"jkl\\\"mno\\\"pqr\"stu'vwx'yz" same?
+
+"fbody contents" test_name
+	cl		:function_test
+			  ifelse z 'pop 2 times \'"A"\''  :@ pop 2 times :@ "B" ;;;
+			0 function_test
+			1 function_test
+			0 function_test
+			0 function_test
+			1 function_test
+			1 function_test
+			put_stack_into_string
+			" { \"A\" \"A\" \"B\" \"B\" \"A\" \"A\" \"A\" \"A\" \"B\" \"B\" \"B\" \"B\" k}"
+			same?
+	cl		fbody function_test
+			"ifelse z 'pop 2 times \\\'\"A\"\\\'' : @ pop 2 times : @ \"B\" ; ;"
+			same?
+			
+oerall_result
+
+
+
+:@
+:hal 					"c2i 1 - i2c" eachchar;        # sample usage of eachchar
+;
+
+
+

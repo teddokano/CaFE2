@@ -1,0 +1,271 @@
+/*
+ *                   ##
+ *                  ##             cafe (CaFE) : Calcurator, Function Expandable
+ *                  ##             
+ *   ###   ####   ######  ###       an RPN calculator for command line interface
+ * ##     ##  ##    ##   ## ##
+ * ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+ *   ###   ### ##   ##    ####               1991 - 2006
+ */
+
+/**
+***   version 2.0 release 0.5
+**/
+
+
+
+
+
+
+
+
+
+[] modify command link list procedure
+[] fractional number handling
+[] net feature
+[] copy function
+[] stack push limitting
+[] N_HISTORIES
+[] conversion like printf
+[] file line number for file loading error
+[] allay, associated var
+[] debug support for "times" command
+[] utf-8 support
+
+
+[done] command candidate display
+[done] undo for stack
+[done] abstract printw function
+[done] display DEC and HEX
+[done] handle "~" in file path
+[done] bold for output
+[done] force command execution
+[done] command execution machanism update
+[done] history save-load
+[done] "put" command
+[done] TYPE-S (no pre token-split)
+[done] handle backslash for print
+[done] file candidate display
+[done] program interface for stdio
+[done] rotate
+[done] if - else
+[done] pop as string
+[done] string addition
+[done] function showing (for edit)
+[done] argument from stack
+[done] stack "save"
+[done] help for command/function
+[done] option switches
+[done] multi push
+[done] remove rubbish after string given by "fedit"
+[done] add single space after auto complete word
+[done] integer overflow detection
+[done] result view in prompt string
+[done] function rename
+[done] function delete
+[done] file name is given from stack as string
+[done] mode selection
+[done] warning free code with "-Wall" option
+[done] correct history handling (biginning of the history)
+[done] correct handling "0x" prefix. 
+[done] integer input, decimal=signed, hex=unsigned
+[done] multiline function support for file input
+[done] "pause" command to help debugging
+[done] global/regular variable declare and access
+[done] private-global variable access controls
+[done] command "compare"
+[done] function save, if it has global scope
+[done] stackcopy
+[done] string operations (char base)
+[done] string operations (token base)
+[done] line corruption at screen editing fixed 
+[done] modify [tab] function for file-path
+[done] improved un-terminated quote andling
+
+20060830 usage "history" changed. now syntax is RPN to process string on stack.
+20060830 "fileop_put_by_name()" (~/.cafe.auto... format) is changed for new "history command"
+20060830 "quote" and "squote" command added. 
+20060830 file loading method improved.
+20060830 "edit" command added. 
+20060831 "$$ONTIME_DISPLAY" added 
+20060901 function "apply" added in stdlib
+20060902 $$PROMPT$
+20060902 $$FORMAT_*$
+20060902 while
+20060906 disabling $$ONTIME_DISPLAY while in a screen edit function
+20060906 SIGINT (Control-C) can be used for breaking loop
+20060906 single quotation handling for function body was fixed
+20060907 refined Makefile
+20060907 file operation "save" can work for user stack
+20060908 s2wn fixed
+20060908 added test files. _test_file_prototype.cafe, controls.cafe, 
+			fileop.cafe, test_utilities.cafe
+20060908 modified test file. string_and_stack_operations.cafe
+20060914 improved "quote" command behavior
+20060914 ui improved to show control characters like '\n', '\t'.
+20060928 $$PRINT_TARGET
+20060928 $$POST_PRINT_SCREEN$
+20060928 $$POST_PRINT_STACK$
+20061005 variable name candidate machanism. 
+20061018 string handling "\xNNN" support. 
+20061019 improved for unquoted string. 
+
+
+
+
+
+What is "CaFE"
+
+"CaFE" is a calculator. 
+
+"CaFE" stands for "Calcurator Function Expandable"
+
+"CaFE" uses RPN as it's semantics. 
+
+"CaFE" version 1.0 was made as an extended version of K&R white book sample code. 
+
+The version 2.0 is re-written to have more flexibilities and power. 
+
+Some symbols and commands are not compatible to version 1.0. 
+Those are...
+    '!'     -> '#'
+	"rev"   -> "recipro"
+'!' is used to let shell executes the token. So comment identifier is changed to '#'. 
+"rev" is changed to "recipro". It calcurates reciprocal number. 
+
+
+
+CaFE semantics
+
+
+A token = a word separated by space character
+
+A token can be evaluated as value or command/function. 
+
+'#' is a special character that marks the beginning of a comment to the line end. (for file loading time only.)
+
+A token evaluated as a value will be pushed into stack. 
+
+Some special character are available. Those character are works as a token and word delimiters. 
+Those characters are...
+    + - * / : ; < >
+This delimiter feature is provided to keep user experience to version 1.0. 
+
+'' can be used to group some words as a token. This multiword token will be evaluated as normal word 
+when it will be evaluated next time. 
+
+Function can be defined. Function definition starts with token ':' and it ends with ';'. The first token 
+after ':' is the name of the function. Following tokens will be a function body. The function body will 
+be evaluated when the function is called. 
+
+Function name can be any name. CaFE allows to have same name as commands. If the same name is defined, 
+the function will be executed instead of command. If user need to execute the command (not function), 
+use '@'. '@' is not a token but a modifier character. It should not be used with space character before 
+the command name. For example "@undo", not "@ undo". 
+
+>>> '!' is a character to let following token executed in the shell.
+
+
+             ##
+			#
+ ###  ###   #   ###
+#    #   # ### #   #
+#    #   #  #  ####
+ ##   ####  #  #
+           #    ##
+		   
+		   
+				
+			   ##
+              #
+ ###   ###    #   ####
+#     #   #   #  #
+#     #   # ##########
+#     #   #   #  # 
+ ###   ### #  #   ####
+			  #
+			##
+ 
+
+				
+			           ##
+                     #
+       ###   ###    #   ####
+     #     #   #   #  #
+    #     #   # ##########
+   #     #   #   #  # 
+   ###   ### #  #   ####
+ 			  #
+			##
+ 
+ 
+ 
+ 
+ ##         
+#    ###    ##
+#   #  #   #
+ ## #  #   #
+	 ## # #####
+	       #
+		   #
+	     ##
+		 
+		    ##
+		   #
+		   #    
+ ##  ###  ###  ##
+#   #  #   #  #  #
+#   #  #   #  # # 
+ ##  ## # #    ###
+ 
+		    ##
+		   #
+		   #    
+ ##  ###  #### ##
+#   #  #   #  #  #
+#   #  #   #  # # 
+ ##  ## # #    ###
+
+                  ###
+				 ##
+ 	 	         ##   
+  ###   #####    ##    ###
+##     ##  ##  ###### ## ##
+##     ##  ##    ##   ###  
+  ## #  ### ##   ##    ####
+                 ##
+			   ###
+ 
+ 
+				  ##
+				 ##
+ 	 	         ##   
+  ###   #####  ######  ###
+##     ##  ##    ##   ## ##
+##     ##  ##    ##   ###  
+  ###   ### ##   ##    ####
+ 
+ 
+cprintf( BOLD, NORM, " 		      ##       \n" );
+cprintf( BOLD, NORM, "		     #         cafe : calcurator function expandable  \n" );
+cprintf( BOLD, NORM, "		     #		  \n" );
+cprintf( BOLD, NORM, " ##  ###  ###  ##    (c) Tsukimidai Communications Syndicate\n" );
+cprintf( BOLD, NORM, "#   #  #   #  #  #       all rights reserved 1991-2005\n" );
+cprintf( BOLD, NORM, "#   #  #   #  # #    version %s\n", g_build_version );
+cprintf( BOLD, NORM, " ##  ## # #    ###   [%s @ %s]\n", g_build_date, g_build_time );
+ 
+/*
+ *                   ##
+ *                  ##             cafe (CaFE) : Calcurator, Function Expandable
+ *                  ##             
+ *   ###   ####   ######  ###       an RPN calculator for command line interface
+ * ##     ##  ##    ##   ## ##
+ * ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+ *   ###   ### ##   ##    ####               1991 - 2006
+ */
+
+/**
+***   version 2.0 release 0.5
+**/
+ 
+ 

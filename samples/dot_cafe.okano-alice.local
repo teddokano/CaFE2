@@ -1,0 +1,300 @@
+#
+#	".cafe" file sample. 
+#
+#	".cafe" is a auto loading file. ".cafe" in user home directory (i.e. "~/.cafe") 
+#	will be automatically loaded in each program starting time. 
+#
+
+#
+
+
+#............................................................version infomation
+
+#	## log ##
+# 	Wed Sep 15 23:16:01 1993
+#	04-Apr-2005 16:12 for CaFE2
+#	11-Mar-2006 22:09 for CaFE2 rel-0.9
+#	26-Apr-2006 22:09 for CaFE2 rel-0.9
+#	09-Jun-2006 17:20 for CaFE2 rel-0.5 (version number rewound)
+#
+
+<$$INTERACTIVE_MODE if t '"~" cd' pop
+					# set working directory to user home, 
+					# if cafe is in interactive mode
+
+100000 >$$RECURSIVE_LIMIT
+
+"" package			# to set all these definitions are defined 
+					# in GLOBAL context
+					
+SUPPRESS_WARN >$$MESSAGE_LEVEL
+					
+#............................................................defining FUNCTIONS
+#............... general utilities 
+
+:reload	( -- !)						# reloads "~/.cafe" file
+		forget func_base "~/.cafe" use;
+
+:func_base;							# user functions will be defined after here
+
+:home								# set working directory to "~"
+		"~" cd;	
+
+:pwd								# set working directory to "~"
+		"pwd" !;	
+
+:undo	( -- !)						# undo = overriding undo command by function				
+		@undo stack;
+
+#............................................................defining FUNCTIONS
+#............... general calc utilities 
+
+:minute	(i -- i*60)					# util for time calculation
+		60 *;
+		
+:hour	(i -- i*60*60)				# util for time calculation
+		minute 60 *;
+
+:day	(i -- i*60*60*24)			# util for time calculation
+		hour 24 *;
+
+:week	(i -- i*60*60*24*7)			# util for time calculation
+		day 7 *;
+
+:p		(f -- f*1e-12)				# pico
+		1e-12 *;
+
+:n		(f -- f*1e-9)				# nano
+		1e-9 *;
+
+:u		(f -- f*1e-6)				# micro
+		1e-6 *;
+
+:m		(f -- f*1e-3)				# mili
+		1e-3 *;
+
+:k		(f -- f*1e3)				# kilo
+		1e3 *;
+
+:M		(f -- f*1e6)				# mega
+		1e6 *;
+
+:G		(f -- f*1e9)				# giga
+		1e9 *;
+
+
+:db		(f -- 20*log10(f))			# dB (V)
+		logt 20 *   ;
+		
+:abs	(n -- n)					# absolute
+		if neg '-1 *' ;
+
+:average (n n ... -- n)				# average
+		depth >dp aa <dp /;
+
+				
+:radtodig (f -- f)					# converts radian to degree
+		pi / 180 *  ;
+
+:gcd	(i1 i2 -- gcd(i1,i2))		# gcd = greatest common devisor
+	2 mdup pop 
+	ifelse t 
+		'% swap gcd' 
+		'pop swap pop' 
+;
+	
+:lcm    (i1 i2 -- lcm(i1,i2))		# lcm = least common multiple
+	2 mdup 
+	gcd 
+	3 mdup pop 
+	* abs swap / 
+	swap pop swap pop 
+;
+
+:is_prime 
+
+	push 2- if neg 'pop pop 0 return'pop	# check if the number is vaild
+	
+	:check_prime					# internal function
+		2 npush % 
+		if t 'pop 1- check_prime'
+	;
+	
+	push .5 pow trunc 
+	check_prime 
+	pop 
+	swap pop
+	
+	<$$MESSAGE_LEVEL
+	SUPPRESS_WARN >$$MESSAGE_LEVEL
+
+	forget check_prime
+	
+	>$$MESSAGE_LEVEL
+;
+
+:warn_suppress_begin
+	<$$MESSAGE_LEVEL [ >warn_suppress ]
+	SUPPRESS_WARN >$$MESSAGE_LEVEL
+;
+
+:warn_suppress_end
+	[ <warn_suppress ] >$$MESSAGE_LEVEL
+;
+
+
+:fc	(n n --- f)  # cut-off frequency
+	2 pi *** recipro 
+;
+
+#............................................................defining FUNCTIONS
+#............... string utilities 
+
+
+################################################## functions for testing 
+
+:sample_tempf 			# sample of feature
+		( -- )
+		3 >repetition
+		<repetition times 
+		:@ 
+			<repetition times 
+			:@ 
+				<repetition times
+				:@
+					<repetition times 
+					:@
+						print _
+					;
+					print .
+				;
+				print |
+			;
+			print \n
+		;
+;
+
+:sample_NO_tempf 		# sample of feature
+		( -- )
+		3 times 
+		'
+			3 times 
+			\'
+				3 times
+				\\\'
+					"." print ^
+				\\\'
+				"|" print ^
+			\'
+			"\n" print ^
+		'
+;
+
+:testfilefolder	"coding/CaFE2/test_files" cd;
+:str_sample		"living is easy with eyes closed. misunderstanding all you see.";
+:hal			"c2i 1- i2c" eachchar;        # sample usage of eachchar
+:t				str_sample "all" "ALL" replace ;
+:tt			print 'test loading 5555555555555555\n';
+
+
+:sss			3 times 'print _';
+:ss			3 times 'sss print |';
+:s				3 times 'ss print A';
+
+:t2s			# time format conversion "hh:mm:ss" or "hh:mm" can be converted to sec
+	>time
+	{
+		<time
+		s2w
+		reverse
+		
+		eval 3600 * >h
+		pop
+		eval 60 * >m
+	
+		depth 2 - ifelse z
+		:@ #if
+			pop #popping a value for if			
+			":" compare if t
+			:@
+				pop
+				eval >s
+			;
+			:@
+				pop
+				0 >s
+			;
+		;
+		:@ #else
+			pop
+			0 >s
+		;
+
+		<h <m <s ++
+	}
+;
+
+
+:s2t				# time format conversion from second to "hh:mm:ss"
+	>tmp
+	"%02d" >$$FORMAT_INT$
+
+	<tmp   60 %            >s
+	<tmp   60 / trunc 60 % >m
+	<tmp 3600 / trunc      >h
+	
+	<h <m ":" gw <s ":" gw
+;
+
+:open
+	"open" swap gs !
+;
+
+:v5 
+	1 > gear
+	5 times
+	:@
+		dup
+		"gear_ratio_" <gear glue < ^ * .
+		< gear 1 + > gear
+	;
+;
+
+:str2bin strrev s2c depth times 'c2i 8 .nB rot';
+
+#	"<stringbuffer swap \"\n\" gw >stringbuffer" >$$POST_PRINT_SCREEN$
+
+
+
+:testend "end of test" ;
+
+#..........................................................setting for DEBUGGER
+
+#"="		"stk" 		debugger_cust_key
+#"?"		"{ vl }"	debugger_cust_key
+
+
+#.........................................................loading other file(s)
+
+"echo $HOST" !!
+"alice.local" compare if t '"~/Documents/life/mn.cafe" use' 
+pop
+
+#.........................................................environmental warning
+
+
+#.............................................................settings for MODE
+
+500		>$$N_HISTORY
+"( (%s) [%p] %b%r%n ) %% " >$$PROMPT$
+
+#...........................................................settings for prompt
+
+:prompt_formanual "CaFE (%b%r%n) %% " >$$PROMPT$ ;
+
+#..........................................................................done
+
+print '".cafe" loaded\n'	### messege to identify the loading completed successfully
+
+
+

@@ -1,0 +1,100 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/_test_file_prototype.cafe
+
+"test_files" package
+
+"~/coding/CaFE2/test_files/" cd
+
+"loading/running controls.cafe" print ^ 
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+test_utilities_initialize
+
+"command \"if\"" test_name
+	cl	-2 if t 5
+		-1 if t 5
+		 0 if t 5
+		 1 if t 5
+		 2 if t 5
+
+		-2 ifelse t 5 1 swap pop
+		-1 ifelse t 5 1 swap pop
+		 0 ifelse t 5 1 swap pop
+		 1 ifelse t 5 1 swap pop
+		 2 ifelse t 5 1 swap pop
+
+		-2 ifelse z 5 1 swap pop
+		-1 ifelse z 5 1 swap pop
+		 0 ifelse z 5 1 swap pop
+		 1 ifelse z 5 1 swap pop
+		 2 ifelse z 5 1 swap pop
+
+		-2 ifelse p 5 1 swap pop
+		-1 ifelse p 5 1 swap pop
+		 0 ifelse p 5 1 swap pop
+		 1 ifelse p 5 1 swap pop
+		 2 ifelse p 5 1 swap pop
+
+		-2 ifelse n 5 1 swap pop
+		-1 ifelse n 5 1 swap pop
+		 0 ifelse n 5 1 swap pop
+		 1 ifelse n 5 1 swap pop
+		 2 ifelse n 5 1 swap pop
+		 put_stack_into_string
+		 " { -2 5 -1 5 0 1 5 2 5 5 5 1 5 5 1 1 5 1 1 1 1 1 5 5 5 5 1 1 1 k}"
+		 same?
+
+"command \"times\"" test_name
+	cl	0 times 1
+		put_stack_into_string
+		" { k}"
+		same?
+	cl	0 10 times 'dup 1 +'
+		put_stack_into_string
+		" { 0 1 2 3 4 5 6 7 8 9 10 k}"
+		same?
+
+"command \"while\"" test_name
+	cl	10 while 'dup 1-' 
+		put_stack_into_string
+		" { 10 9 8 7 6 5 4 3 2 1 0 k}"
+		same?
+		
+"command \"eval\"" test_name
+	cl	"1 2 3 ++" eval 
+		"4 3 2 +*" eval 
+		"\"Test\" \"String\" glue" eval 
+		put_stack_into_string
+		" { 6 20 \"TestString\" k}"
+		same?
+
+"command \"!!\"" test_name
+		"echo THIS_STRING_SHOULD_BE_AS_STRING" !! 
+		"THIS_STRING_SHOULD_BE_AS_STRING\n"
+		same?
+		
+oerall_result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

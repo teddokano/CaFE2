@@ -1,0 +1,76 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/fileop.cafe
+
+"test_files" package
+
+"~/coding/CaFE2/test_files/" cd
+
+"loading/running fileop.cafe\n" print ^ 
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+test_utilities_initialize
+
+"commands \"save\" and \"use\"" test_name
+
+"file_save_result" >filename
+
+1 2 3 4 5 { "A" "B" "C" { 11 22 33 k} "D" k} 6 7 8 9
+<filename save
+
+put_stack_into_string >initial
+cl
+
+<filename use
+put_stack_into_string >loaded
+
+<initial
+<loaded
+same?
+
+oerall_result
+
+"rm " <filename glue !
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

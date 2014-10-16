@@ -1,0 +1,82 @@
+#
+#                    ##
+#                   ##             cafe (CaFE) : Calcurator, Function Expandable
+#                   ##             
+#    ###   ####   ######  ###        a RPN calculator for command line interface
+#  ##     ##  ##    ##   ## ##
+#  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
+#    ###   ### ##   ##    ####               1991 - 2006
+#
+
+### test_files/variable_test.cafe
+"loading/running variable_test.cafe" print ^ 
+
+"test_files" package
+
+fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+test_utilities_initialize
+
+
+:variable_test;
+
+#####
+#####	test start
+#####
+
+cl
+
+"c0" private variable	#	defining private variable
+"c1" private variable	#	defining private variable
+
+"c0" global variable	#	defining GLOBAL variable
+"c1" global variable	#	defining GLOBAL variable
+
+"global"	> c0		#	assigning a value into GLOBAL variable
+"variable"	> c1		#	assigning a value into GLOBAL variable
+
+
+#####
+#####	function definitions for private variable test
+#####
+
+: assign_into_private_var
+	"private"	> c0
+	"variable"	> c1
+;
+
+: assign_back_from_private_var
+	< c0
+	< c1
+	" " swap glue glue
+	"private variable"
+	same?
+;
+
+: test_private
+	assign_into_private_var
+	assign_back_from_private_var
+;
+
+#####
+#####	function execution for private variable test
+#####
+
+"private variable" test_name
+test_private
+
+#####
+#####	check the global variables keeping the value
+#####
+
+"global variable" test_name
+
+< c0 < c1 " " swap glue glue
+
+"global variable"
+same?
+
+#####
+#####	clear defined functions
+#####
+
+oerall_result
