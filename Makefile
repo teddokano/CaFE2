@@ -41,6 +41,7 @@ STDLIB_LOCATION			= $(STDLIB_DIR)/$(STDLIB_FILE)
 
 CAFELIB					= library
 STDLIB_SRC				= $(CAFELIB)/$(STDLIB_FILE)
+DOT_CAFE_FILE			= ~/.cafe
 
 SHELL		= /bin/sh
 
@@ -88,8 +89,11 @@ BUILD_INFO_OBJ	= $(BUILD_INFO).o
 
 all : packinfo cafe $(STDLIB_SRC)
 
-install : install_executable install_stdlib 
+install : install_executable install_stdlib install_dot_cafe_file
 
+install_dot_cafe_file : 
+	@if [ ! -e $(DOT_CAFE_FILE) ] ; then touch $(DOT_CAFE_FILE) ; fi;
+	
 install_stdlib : $(STDLIB_SRC)
 	@if [ ! -e $(STDLIB_DIR) ] ; then mkdir -p $(STDLIB_DIR) ; fi;
 	@[ -d $(STDLIB_DIR) ]  # catch an error if the target is not a directory
