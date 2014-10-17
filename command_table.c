@@ -1527,7 +1527,7 @@ int try_token( char *key, char **src_p )
 	}
 	else
 	{
-		if ( (kwp->comm_table_index == 0) )
+		if ( kwp->comm_table_index == 0 )
 		{
 			controls_function_call_prologue( kwp->function_ptr );
 			evaluate( (kwp->function_ptr)->body );
