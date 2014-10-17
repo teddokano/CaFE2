@@ -178,7 +178,7 @@ void show_top( void )
 {
 	string_object	s;
 
-	if ( (s	= show_value( stack_pointer( NULL )  - 1 )) );
+	if ( (s	= show_value( stack_pointer( NULL )  - 1 )) )
 	{
 		ui_user_print( s );
 		dispose_string_object( s );
