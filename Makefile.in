@@ -47,7 +47,7 @@ SHELL		= /bin/sh
 
 CC			= @CC@
 DEFS		= @DEFS@
-LIBS		= @LIBS@ -lm
+LIBS		= @LIBS@ -lm -lncurses
 CFLAGS		= -O3 -Wall $(DEFS)
 #DPENDFLAGS	= -Y 
 
