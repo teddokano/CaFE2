@@ -62,14 +62,13 @@ cafeはgithubでホスティングされています．これを適当なディ�
     git clone https://github.com/teddokano/CaFE2.git
 
 この後，CaFE2フォルダに移って「./configure; make」を実行します．これでcafeがビルドされ，ライブラリファイルに必要な変更が加えられます．  
-このあと「make install」のコマンドを実行し，実行ファイルとライブラリファイルをインストールすると準備完了です．
+このあと「sudo make install」のコマンドを実行し，実行ファイルとライブラリファイルをインストールすると準備完了です．
 
 	メモ : 
 	「Makefile」をデフォルトのまま使用し，「make install」した場合，cafeはユーザ・ディレクトリにインストールされます．この時，cafeの実行ファイルは「‾/bin/」にコピーされるので，このディレクトリにパスを設定しておかなければなりません．
 	
 	メモ : 
 	一方Makefile中のINSTALL_TARGET変数に「PUBLIC」を設定すると(デフォルトでは「PRIVATE」になっている)，インストールは「/usr/local/bin/」に行われます．またライブラリファイルも「/etc/」に置かれます．PUBLICインストールを設定した場合には，make installを実行する際に管理者権限が必要になります．  
-	「sudo make install」のように実行すると良いでしょう．「sudo」は「make install」を管理者権限で実行するために必要なコマンドです．
 
 	メモ : 
 	「make」はUNIX互換環境で動作します．DJGPP等をインストールしたDOS等の非UNIX環境では動作しません．これはUNIXのコマンドをMakefile内部で使用しているためです．
