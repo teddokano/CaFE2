@@ -1961,7 +1961,13 @@ int find_n_match_candidate( char *key )
 			
 		kwp		= kwp->next;
 	}
-	
+
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+    
 	if ( kwp == NULL )	//	no matching key
 		return ( 0 );
 		
@@ -1976,7 +1982,7 @@ int find_n_match_candidate( char *key )
 		int			i;
 		int			j;
 		int			pos;
-		volatile int height;    //  volatile is to suppress warning
+		int VARIABLE_IS_NOT_USED height;    //  volatile is to suppress warning
 		int			width;
 
 		other_kwp	= kwp->next;
