@@ -842,9 +842,9 @@ stack *current_target_stack( void )
 
 void set_target_stack( stack *sp )
 {
-	stack	*stackp;
+//	stack	*stackp;
 	
-	stackp	= current_target_stack();
+//	stackp	= current_target_stack();
 
 //	cprintf( BOLD, CONT, "@@@@  stack switched  <0x%08lX>  >>  ", stackp );
 	

@@ -65,7 +65,7 @@ char *key_input( char *prompt )
 	int				bbyp=1000;
 	int				scrl_ofst	= 0;
 	int				y, x;
-	int				py, px;
+//	int				py, px;
 	int				ontime_display;
 	
 	ontime_display	= g_cafe_mode.ontime_display.value;
@@ -101,8 +101,8 @@ char *key_input( char *prompt )
 
 
 	getyx( stdscr, by, bx );
-	px	= bx;
-	py	= by;
+//	px	= bx;
+//	py	= by;
 	
 	prev_len	= length;
 

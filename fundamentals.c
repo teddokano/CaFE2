@@ -619,7 +619,6 @@ int	token_type( string_object s )
 	char	prev_char	= START;
 	int		count_e		= 0;
 	int		count_dot	= 0;
-	int		count_x		= 0;
 	int		state		= PARSE_NON_HEX;
 
 	if ( *s == '\"' )
@@ -631,7 +630,6 @@ int	token_type( string_object s )
 	if ( ('0' == *s) && ('x' == tolower(*(s + 1))) )
 	{
 		state		 = PARSE_HEX;
-		count_x		 = 1;
 		s			+= 2;
 	}
 	

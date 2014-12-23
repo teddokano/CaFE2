@@ -1976,7 +1976,7 @@ int find_n_match_candidate( char *key )
 		int			i;
 		int			j;
 		int			pos;
-		int			height;
+		volatile int height;    //  volatile is to suppress warning
 		int			width;
 
 		other_kwp	= kwp->next;
@@ -2092,25 +2092,3 @@ void *find_token( char *key, char **src_p )
 	
 	return ( (void *)kwp );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
