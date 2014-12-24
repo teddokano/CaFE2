@@ -96,7 +96,7 @@ install_executable : $(PROG) packinfo
 	@if [ $(PROG) -nt $(INSTALL_DIR)/$(PROG) -o ! -e $(INSTALL_DIR)/$(PROG) ] ; then cp $(PROG) $(INSTALL_DIR)/; echo "executable copied to $(INSTALL_DIR)" ; fi;
 	
 uninstall : 
-	sudo rm $(INSTALL_DIR)/$(PROG) $(STDLIB_LOCATION)
+	rm $(INSTALL_DIR)/$(PROG) $(STDLIB_LOCATION)
 
 $(STDLIB_SRC) : $(STDLIB_SRC).base
 	sed s#FILENAME_TO_REPLACE#$(STDLIB_LOCATION)# $(STDLIB_SRC).base > $(STDLIB_SRC)
