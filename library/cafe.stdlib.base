@@ -9,6 +9,7 @@
 #
 #	## log ##
 #	This file is forked from ~/.cafe file on 23-Aug-2006
+#	Modified 06-Jan-2015
 #
 
 "cafe.stdlib" package
@@ -325,6 +326,8 @@
 
 
 :prompt >$$PROMPT$;
+
+:test_execute <$$SOURCE_FILES_DIRECTORY$ "/test_files/tests.cafe" glue use;
 
 print '"FILENAME_TO_REPLACE" loaded\n'        ### messege to identify the loading completed successfully
 

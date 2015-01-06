@@ -912,7 +912,7 @@ cafe_mode		g_cafe_mode			= {
 										{ 0,		"$$LOOP_START"			},
 										{ 1,		"$$LOOP_STEP"			},
 										{ 0,		"$$DEFAULT_DIRECTORY$"	,	"" },
-										{ 0,		"$$TEST_FILES_DIRECTORY$"	,	"" }
+										{ 0,		"$$SOURCE_FILES_DIRECTORY$"	, SRC_FILE_DIR_PATH }	//	SRC_FILE_DIR_PATH will be replaced by Makefile
 									   };
 
 

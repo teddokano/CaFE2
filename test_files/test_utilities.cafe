@@ -5,14 +5,14 @@
 #    ###   ####   ######  ###        a RPN calculator for command line interface
 #  ##     ##  ##    ##   ## ##
 #  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
-#    ###   ### ##   ##    ####               1991 - 2006
+#    ###   ### ##   ##    ####               1991 - 2006, 2015
 #
 
 ### test_files/test_utilities.cafe
 
 "test_files" package
 
-"~/coding/CaFE2/test_files/" cd
+<$$SOURCE_FILES_DIRECTORY$ "/test_files/" glue cd
 
 "loading test_utilities.cafe\n" print ^ 
 

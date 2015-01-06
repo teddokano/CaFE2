@@ -119,7 +119,7 @@ typedef	struct mode		{
 							mode_item	loop_start;
 							mode_item	loop_step;
 							mode_item	directory_default;
-							mode_item	directory_test_files;
+							mode_item	directory_src_files;
 						}
 						cafe_mode;
 

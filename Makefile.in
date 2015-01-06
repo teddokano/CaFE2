@@ -30,7 +30,7 @@ PRIVATE_STDLIB_DIR		= ~/etc
 
 INSTALL_DIR				= $($(INSTALL_TARGET)_INSTALL_DIR)
 STDLIB_DIR				= $($(INSTALL_TARGET)_STDLIB_DIR)
-
+SRC_DIR					= $(PWD)
 
 ##########
 ###  build settings
@@ -88,12 +88,12 @@ install_dot_cafe_file :
 install_stdlib : $(STDLIB_SRC)
 	@if [ ! -e $(STDLIB_DIR) ] ; then mkdir -p $(STDLIB_DIR) ; fi;
 	@[ -d $(STDLIB_DIR) ]  # catch an error if the target is not a directory
-	@if [ $(STDLIB_SRC) -nt $(STDLIB_LOCATION) -o ! -e $(STDLIB_LOCATION) ] ; then cp $(STDLIB_SRC) $(STDLIB_LOCATION) ; echo "executable copied to $(STDLIB_DIR)"; fi
+	@if [ $(STDLIB_SRC) -nt $(STDLIB_LOCATION) -o ! -e $(STDLIB_LOCATION) ] ; then cp $(STDLIB_SRC) $(STDLIB_LOCATION) ; echo "installing : library copied to $(STDLIB_DIR)"; fi
 	
 install_executable : $(PROG) packinfo
 	@if [ ! -e $(INSTALL_DIR) ] ; then mkdir -p $(INSTALL_DIR) ; fi;
 	@[ -d $(INSTALL_DIR) ]  # catch an error if the target is not a directory
-	@if [ $(PROG) -nt $(INSTALL_DIR)/$(PROG) -o ! -e $(INSTALL_DIR)/$(PROG) ] ; then cp $(PROG) $(INSTALL_DIR)/; echo "executable copied to $(INSTALL_DIR)" ; fi;
+	@if [ $(PROG) -nt $(INSTALL_DIR)/$(PROG) -o ! -e $(INSTALL_DIR)/$(PROG) ] ; then cp $(PROG) $(INSTALL_DIR)/; echo "installing : executable copied to $(INSTALL_DIR)" ; fi;
 	
 uninstall : 
 	rm $(INSTALL_DIR)/$(PROG) $(STDLIB_LOCATION)
@@ -107,6 +107,9 @@ $(PROG) : $(OBJS) $(BUILD_INFO_OBJ)
 
 fundamentals.o : fundamentals.c
 	$(CC) $(CFLAGS) -DSTDLIB_LOCATION=\"$(STDLIB_LOCATION)\" -o $@ -c $<
+
+controls.o : controls.c
+	$(CC) $(CFLAGS) -DSRC_FILE_DIR_PATH=\"$(SRC_DIR)\" -o $@ -c $<
 
 $(BUILD_INFO_OBJ) : $(SRCS) $(BUILD_INFO_SRC) ui.h
 	$(CC) $(CFLAGS) -DBUILDNUM=\"$(shell cat packinfo)\" -DBUILDFOR=\"$(BUILDFOR)\" -DSTDLIB_LOCATION=\"$(STDLIB_LOCATION)\" -o $@ -c $(BUILD_INFO_SRC)

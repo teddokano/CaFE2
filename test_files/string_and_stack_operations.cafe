@@ -5,15 +5,18 @@
 #    ###   ####   ######  ###        a RPN calculator for command line interface
 #  ##     ##  ##    ##   ## ##
 #  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
-#    ###   ### ##   ##    ####               1991 - 2006
+#    ###   ### ##   ##    ####               1991 - 2006, 2015
 #
 
 ### test_files/string_and_stack_operations.cafe
-"loading/running string_and_stack_operations.cafe" print ^ 
 
 "test_files" package
 
-fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+<$$SOURCE_FILES_DIRECTORY$ "/test_files/" glue cd
+
+"loading/running string_and_stack_operations.cafe" print ^ 
+
+fisdef test_utilities_loaded if z '"test_utilities.cafe" use'
 test_utilities_initialize
 
 "command \"string\"" test_name

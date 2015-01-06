@@ -5,7 +5,7 @@
 #    ###   ####   ######  ###        a RPN calculator for command line interface
 #  ##     ##  ##    ##   ## ##
 #  ##     ##  ##    ##   ###             (c) Tsukimidai Communications Syndicate
-#    ###   ### ##   ##    ####               1991 - 2006
+#    ###   ### ##   ##    ####               1991 - 2006, 2015
 #
 
 ### test_files/variable_test.cafe
@@ -13,7 +13,9 @@
 
 "test_files" package
 
-fisdef test_utilities_loaded if z '"~/coding/CaFE2/test_files/test_utilities.cafe" use'
+<$$SOURCE_FILES_DIRECTORY$ "/test_files/" glue cd
+
+fisdef test_utilities_loaded if z '"test_utilities.cafe" use'
 test_utilities_initialize
 
 
