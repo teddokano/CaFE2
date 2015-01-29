@@ -21,6 +21,7 @@
 #include	<string.h>
 #include	<math.h>
 #include	<time.h>
+#include	<limits.h>
 
 #include	"command_table.h"
 #include	"stack.h"
@@ -40,6 +41,7 @@ enum	{
 			OP_SUB,
 			OP_MUL,
 			OP_DIV,
+			OP_IGNORE
 		};
 
 
@@ -139,55 +141,127 @@ void four_operations( int operator )
 	if ( (s1->type == FLOAT) || (s2->type == FLOAT) )
 		return_type	= FLOAT;
 
-	if ( (return_type == INTEGER) && (operator == OP_DIV) && *((long *)(s1->item_p)) % *((long *)(s2->item_p)) )
+	if ( operator == OP_DIV )
+	{
+		if (   ((s2->type == INTEGER) && (0   == *((long   *)(s2->item_p)))) 
+			|| ((s2->type == FLOAT  ) && (0.0 == *((double *)(s2->item_p))))
+			)
+		{
+			operator	= OP_IGNORE;
+			cprintf( ERROR, CONT, "zero devisor\n");
+		}		
+	}
+
+	if ( (operator == OP_DIV) && (return_type == INTEGER) && *((long *)(s1->item_p)) % *((long *)(s2->item_p)) )
 		return_type	= FLOAT;
 
 	if ( return_type == INTEGER )
 	{
-		long	r	= 0;	//	This is to surpress warning
 		long	v2;
 		long	v1;
 		
 		v2	= *((long *)(s2->item_p));
 		v1	= *((long *)(s1->item_p));
+
+//cprintf( NORM, CONT, "%ld, %ld, %ld, %ld\n", LONG_MAX, LONG_MAX, LONG_MIN, LONG_MIN );
 		
+		//	
+		//	integer overflow detection added
+		//		source: https://www.jpcert.or.jp/sc-rules/c-int32-c.html
+		//
+
 		switch ( operator )
 		{
 			case OP_ADD : 
-				r	= v1 + v2;
+			  	if (	((v2 > 0) && (v1 > (LONG_MAX - v2))) ||
+      					((v2 < 0) && (v1 < (LONG_MIN - v2)))
+      				)
+				{
+					cprintf( NORM, CONT, "result is converted to float\n" );
+    				return_type	= FLOAT;
+ 				}
+ 				else
+ 				{
+					cprintf( NORM, CONT, "result type is kept\n" );
+					push_i( v1 + v2 );
+				}
 				break;
 			case OP_SUB : 
-				r	= v1 - v2;
+				if (	(v2 > 0 && v1 < LONG_MIN + v2) ||
+    					(v2 < 0 && v1 > LONG_MAX + v2)
+    				)
+				{
+					cprintf( NORM, CONT, "result is converted to float\n" );
+    				return_type	= FLOAT;
+				}
+				else
+				{
+					push_i( v1 - v2 );
+				}
 				break;
 			case OP_MUL : 
-				r	= v1 * v2;
+				if ( v1 > 0 )
+				{
+        			if ( v2 > 0 )
+        			{
+            			if ( v1 > (LONG_MAX / v2) )
+            			{
+                			return_type	= FLOAT;
+            			}
+        			}
+        			else
+        			{
+            			if ( v2 < (LONG_MIN / v1) )
+            			{
+                			return_type	= FLOAT;
+            			}
+        			}
+    			}
+    			else
+    			{
+					if ( v2 > 0 )
+					{
+						if ( v1 < (LONG_MIN / v2) )
+						{
+                			return_type	= FLOAT;
+            			}
+        			}
+        			else
+        			{
+						if ( (v1 != 0) && (v2 < (LONG_MAX / v1)) )
+						{
+                			return_type	= FLOAT;
+            			}
+        			}
+    			}
+
+    			if ( return_type == FLOAT )
+    			{
+    				cprintf( NORM, CONT, "result is converted to float\n" );
+    			}
+    			else
+				{
+					push_i( v1 * v2 );
+				}
+
 				break;
 			case OP_DIV : 
-				if ( v2 )
-					r	= v1 / v2;
-				else
-					r	= ~v2;
+				if ( (v1 == LONG_MIN) && (v2 == -1) ) 
+				{
+					return_type	= FLOAT;
+  				} 
+  				else
+  				{
+					push_i( v1 / v2 );
+				}
+				break;
+			case OP_IGNORE :
+				//	may be trying devide by zero
 				break;
 		}
-
-#if 0
-		if ( llabs( r ) >> 31 )		//  not 32 bit, because need to detect 
-		{
-			if ( (v2 == 0) && (operator == OP_DIV) )
-				cprintf( ERROR, CONT, "zero devisor\n");
-			else
-				cprintf( ERROR, CONT, "integer overflow\n");
-		}
-		else
-		{
-			push_i( (int)r );
-		}
-#else
-		push_i( r );
-#endif
-	
 	}
-	else if ( return_type == FLOAT )
+	
+	if ( return_type == FLOAT )
 	{
 		double	v2;
 		double	v1;
@@ -214,10 +288,10 @@ void four_operations( int operator )
 				push( v1 * v2 );
 				break;
 			case OP_DIV : 
-				if ( v2 == 0.00 )
-					cprintf( ERROR, CONT, "zero devisor\n");
-				else
-					push( v1 / v2 );
+				push( v1 / v2 );
+				break;
+			case OP_IGNORE :
+				//	may be trying devide by zero
 				break;
 		}
 	}
@@ -237,15 +311,18 @@ void four_operations( int operator )
 
 void command_modulo( string_object *src_p )
 {
-	int		op2;
+	long	op1;
+	long	op2;
 	
 	op2		= pop_i();
-	
-	if ( op2 )
-		push_i( pop_i() % op2 );
-	
+	op1		= pop_i();
+
+	if ( !op2 )
+		cprintf( ERROR, CONT, "zero devisor at modulo\n");
+	else if ( (op1 == LONG_MIN) && (op2 == -1) )
+		cprintf( ERROR, CONT, "modulo cannot handle this \"%ld %ld %%\"\n", op1, op2 );
 	else
-		cprintf( ERROR, CONT, "zero devisor\n");
+		push_i( op1 % op2 );
 }
 
 
@@ -393,8 +470,8 @@ void command_not( string_object *src_p )
 
 void bit_operations( int operation )
 {
-	int		op1;
-	int		op2		= 0;
+	long	op1;
+	long	op2		= 0;
 
 	op1		= pop_i();
 	
