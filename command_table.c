@@ -182,7 +182,6 @@ void four_operations( int operator )
  				}
  				else
  				{
-					cprintf( NORM, CONT, "result type is kept\n" );
 					push_i( v1 + v2 );
 				}
 				break;
@@ -249,7 +248,8 @@ void four_operations( int operator )
 				if ( (v1 == LONG_MIN) && (v2 == -1) ) 
 				{
 					return_type	= FLOAT;
-  				} 
+                    cprintf( NORM, CONT, "result is converted to float\n" );
+  				}
   				else
   				{
 					push_i( v1 / v2 );
