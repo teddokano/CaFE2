@@ -1,10 +1,10 @@
 #
 #  0から9までの4つの数字を1度ずつ+-*/の計算を行うことによって10を作り出すゲームの答えを求める．
 #
-#	関数「ten_by_4nums」はスタック上の4つの数値をとり，この4つの数字でできる24通りのすべての順列を作り出す．
-#		一つの順列ができる度に，関数「ten」を呼び出す．
+#	関数「 ten_single_by_4nums」はスタック上の4つの数値をとり，この4つの数字でできる24通りのすべての順列を作り出す．
+#		一つの順列ができる度に，関数「 m10_single」を呼び出す．
 # 
-#	関数「ten」はスタック上の4つの数値をとり，この順番に従った計算を行う．数値の計算は64通りあるが，これを
+#	関数「 m10_single」はスタック上の4つの数値をとり，この順番に従った計算を行う．数値の計算は64通りあるが，これを
 #		すべて行ってみて，10になるものを発見すると，その計算式を表示する．10になるまでに分数的な過程を
 #		経るものはその表示も行う．
 #		(A+B)*(C+D)のような計算を行うために64回の計算の中で，最初の演算の結果を「rot」する計算を追加した．
@@ -13,11 +13,11 @@
 #
 #	01-Sep-2006
 #	23-Jun-2010  "-" "/" の演算順についての扱いのためswapを挿入することにした
+#	30-Jan-2015  ユーザビリティのための改善
 #
 #
 
-#"ten_by_4nums" package			# to set all these definitions are defined 
-
+#" ten_single_by_4nums" package			# to set all these definitions are defined 
 
 :get_operator
 		"+-*/"
@@ -26,8 +26,11 @@
 ;
 
 
-:ten
-	4 npush	
+: m10_single
+	#4 npush	
+	>i3 >i2 >i1 >i0
+	<i0 <i1 <i2 <i3
+	
 	3 times gs
 	>four_numbers		
 		
@@ -68,8 +71,7 @@
 			<calc <calc_base compare if p 'pop <calc eval check_the_number'
 
 			cl
-						
-			
+
 			### get 4 numbers
 			<four_numbers eval 
 			
@@ -78,7 +80,6 @@
 			<calc <calc_base compare if p 'pop <calc eval check_the_number'
 
 			cl
-						
 			
 			### get 4 numbers
 			<four_numbers eval 
@@ -91,11 +92,11 @@
 			<calc eval check_the_number
 
 			cl
-						
-			
+
 			<counter 1+ >counter
 		;
 		
+	<i0 <i1 <i2 <i3
 	}
 ;
 
@@ -126,10 +127,8 @@
 	dup 10 compare if t   ## need to use "compare" to make sure the relult is INTEGER
 	:@
 		[
-			<four_numbers print ^
-			" " print ^
-			<calc print ^
-			"\n" print ^
+			<four_numbers <calc gs
+			=ppush
 		]
 	;
 			
@@ -138,43 +137,64 @@
 	10.0 compare if t   ## need to use "compare" to make sure the relult is INTEGER
 	:@
 		[
-			<four_numbers print ^
-			" " print ^
-			<calc print ^
-			"  (fractional)\n" print ^
+			<four_numbers <calc "  (fractional)" gs gs
+			=ppush
 		]
 	;
 ;
 
+: {take4
+	>i3 >i2 >i1 >i0
+	{
+	<i0 <i1 <i2 <i3
+;
 
-:ten_by_4nums
 
+:m10
 	:/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ; 
 
 	3 times 
 	:@
-		rot  ten
-		rot  ten
-		rot  ten
-		swap ten
+		{take4 rot }   m10_single
+		{take4 rot }   m10_single
+		{take4 rot }   m10_single
+		{take4 swap }  m10_single
 	;
 
-	rot rot
-	swap 
-	rot rot
-
+	{take4
+		rot rot
+		swap 
+		rot rot
+	}
+	
 	3 times 
 	:@
-		rot  ten
-		rot  ten
-		rot  ten
-		swap ten
+		{take4 rot  }  m10_single
+		{take4 rot  }  m10_single
+		{take4 rot  }  m10_single
+		{take4 swap }  m10_single
 	;
 
 	forget /
 ;
 
+: ten_by_4nums
+	m10	
+	4 times pop
+	sort uniq
+	"\"\n\" gs ." map
+;
 
+:ten
+	:/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ; 
+
+	m10_single
+	4 times pop
+	sort uniq
+	"\"\n\" gs ." map
+	
+	forget /
+;
 
 :permutation_test
 
@@ -212,21 +232,4 @@
 		rot  ,
 		swap ,
 ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

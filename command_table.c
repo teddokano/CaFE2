@@ -76,6 +76,94 @@ int hash( string_object s );
 void add_to_hash_table( keywd *kwp );
 void remove_from_hash_table( char *key );
 
+int general_compare( stack_item *s1, stack_item *s2 )
+{
+	int		result;
+	double	v;
+	
+	if ( (result	= s2->type - s1->type) )
+		return result;
+	
+	switch ( s2->type )
+	{
+		case INTEGER : 
+			result	= *((long *)(s2->item_p)) - *((long *)(s1->item_p));
+			break;
+		case FLOAT : 
+			v		= *((double *)(s2->item_p)) - *((double *)(s1->item_p));
+			result	= (v    < 0.00) ? -1 : 0;
+			result	= (0.00 < v   ) ?  1 : result;
+			break;
+		case STRING : 
+			result	= strcmp( (char *)(s2->item_p), (char *)(s1->item_p) );
+			break;
+		default : 
+			result	= 0;
+			break;
+	}
+
+	return result;
+}
+
+void command_sort( string_object *src_p )
+{
+	int		depth;
+	int		i;
+	int		j;
+	
+	depth	= stack_pointer( NULL );
+	stack_item	*sip[ depth ];
+	stack_item	*ts;
+
+	if ( depth < 2 )
+		return;
+
+	for ( i = 0; i < depth; i++ )
+	{
+		sip[ i ]	= pop_item( NULL );
+	}
+	
+	for ( i = 0; i < depth; i++ )
+	{
+		for ( j = 1; j < (depth - i); j++ )
+		{
+			if ( general_compare( sip[ j -1 ], sip[ j ] ) < 0 )
+			{
+				ts				= sip[ j     ];
+				sip[ j     ]	= sip[ j - 1 ];
+				sip[ j - 1 ]	= ts;
+			}
+		}
+	}
+
+	for ( i = 0; i < depth; i++ )
+		push_item( sip[ i ]->item_p, sip[ i ]->type, NULL );
+}
+
+void command_uniq( string_object *src_p )
+{
+	int		depth;
+	int		i;
+	
+	depth	= stack_pointer( NULL );
+	stack_item	*sip[ depth ];
+
+	if ( depth < 2 )
+		return;
+
+	for ( i = 0; i < depth; i++ )
+		sip[ i ]	= pop_item( NULL );
+		
+	for ( i = (depth - 1); i > 0; i-- )
+	{
+		if ( general_compare( sip[ i -1 ], sip[ i ] ) )
+			push_item( sip[ i ]->item_p, sip[ i ]->type, NULL );
+		else
+			dispose_stack_item( sip[ i ] );
+	}
+
+	push_item( sip[ 0 ]->item_p, sip[ 0 ]->type, NULL );
+}
 
 
 void command_nop( string_object *src_p )
@@ -936,6 +1024,7 @@ void command_swap( string_object *src_p )
 }
 
 
+
 void command_rot( string_object *src_p )
 {
 	stack_rotate( NULL );
@@ -1425,6 +1514,8 @@ command		g_command_table[]	=	{
 		{	"npush",	command_npush,				"copy N pcs stack item"}, 
 		{	"mdup",		command_npush,		"copy N pcs stack item"},
 		{	"swap",		command_swap,		"swap stack top"}, 
+		{	"sort",		command_sort,		"sort stack"}, 
+		{	"uniq",		command_uniq,		"remove duplicated item"}, 
 		{	"rot",		command_rot,		"rotate stack. top goes to bottom"}, 
 		{	"reverse",	command_reverse,	"reverse stack order"}, 
 		{	"depth",	command_depth,		"depth of stack"}, 

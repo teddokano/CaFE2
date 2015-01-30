@@ -136,6 +136,12 @@
 		>tmp cl <tmp
 ;
 
+:=ppush								# push an stack item to parent stack 
+		>stack_item
+		=parent =target
+		<stack_item swap =target
+;
+
 :stk		( -- )						# display contents of current stack horizontally
 		{								# prepare new stack
 			=pcp 						# copy parent stack contents
