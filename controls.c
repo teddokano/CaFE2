@@ -779,6 +779,14 @@ void variable_access( char **src_p, char mode )
 			cprintf( ERROR, CONT, "no content to read from variable for \"%s\"\n", varname );
 			return;	
 		}
+        
+        if ( (vp->item)->type == STACK )
+        {
+            stack   *sp;
+            sp	= *((stack **)((vp->item)->item_p));
+            //printf( "\r\n  VAR stack ID = ==%d==", sp->id );
+            update_stack_chain( sp );
+        }
 
 		push_item( (vp->item)->item_p, (vp->item)->type, NULL );
 	}

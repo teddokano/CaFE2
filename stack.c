@@ -774,6 +774,19 @@ stack *make_stack( void )
 }
 
 
+void update_stack_chain( stack *s_p )
+{
+    stack   *c_p;
+    
+    c_p     = current_target_stack();
+    
+    //    printf( "\r\n%p - %p", s_p, c_p );
+
+    if ( c_p != s_p )
+        s_p->prev   = c_p;
+}
+
+
 void dispose_stack( stack *stackp )
 {
 	if ( !stackp || (stackp == &g_stack) )

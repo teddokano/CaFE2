@@ -89,6 +89,7 @@ void		stack_rotate( stack *targ_stk_p );
 void		stack_npush( int mode );
 void		stack_reverse( void );
 stack		*make_stack( void );
+void        update_stack_chain( stack *s_p );
 void		dispose_stack( stack *s_p );
 
 int stack_get_current_stack_id( void );
