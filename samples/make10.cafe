@@ -1,23 +1,35 @@
 #
-#  0から9までの4つの数字を1度ずつ+-*/の計算を行うことによって10を作り出すゲームの答えを求める．
+#   0から9までの4つの数字を1度ずつ+-*/の計算を行うことによって10を作り出すゲームの答えを求める．
 #
-#	関数「 ten_single_by_4nums」はスタック上の4つの数値をとり，この4つの数字でできる24通りのすべての順列を作り出す．
-#		一つの順列ができる度に，関数「 m10_single」を呼び出す．
-# 
-#	関数「 m10_single」はスタック上の4つの数値をとり，この順番に従った計算を行う．数値の計算は64通りあるが，これを
-#		すべて行ってみて，10になるものを発見すると，その計算式を表示する．10になるまでに分数的な過程を
-#		経るものはその表示も行う．
-#		(A+B)*(C+D)のような計算を行うために64回の計算の中で，最初の演算の結果を「rot」する計算を追加した．
+#   これまで「ten_by_4nums.cafe」としていたファイルの計算方法を大幅に変えたバージョン
+#   以前のものはスタックを一つだけ使って逐次的に計算していくものだったが，スタック操作関数としてsortとuniqを加えたのを契機に
+#   これらの機能を活用したり，汎用的な関数を定義してそれを使うようにしてみた．
+#
+#	関数「make10」はスタック上の4つの数値をとり，「permutation」によってこの4つの数字でできる24通りのすべての順列を作り出す．
+#   続いて演算子の組み合わせを「operation」によって作る
+#   permutationとoperationの結果はそれぞれスタックに積まれているので，両方の内容から「combination」 で全ての組み合わせを作る
+#   全ての非演算子と演算子の組み合わせを作り出し，それを評価．10になったものがあれはその計算式をスタックに積む．
+#
+#	関数「ten」はスタック上の4つの数値をとり，この順番に従った(数値の順番は入れ替えずに)計算を行う．
+#   計算方法は上記の方法のpermutationを行わない版となっている．
 #
 #	このプログラムはcafeの可能性を確認する目的だけのために作成された．速度的な最適化は一切行われていない．
 #
 #	01-Sep-2006
 #	23-Jun-2010  "-" "/" の演算順についての扱いのためswapを挿入することにした
 #	30-Jan-2015  ユーザビリティのための改善
+#   (上記までが ten_by_4nums.cafe の変更点)
+#   03-Feb-2015 ファイル名をmake10.cafeとして計算方法を大幅に変更
 #
+#   使い方：
+#   1. 次のようなコマンドを打つことによって，ソースから関数の定義を読み込んでおく
+#       「  <$$SOURCE_FILES_DIRECTORY$ "/samples/make10.cafe" glue use  」
+#   2. 4つの数値を入力．続いて「make10」関数を呼び出す．以下は「1，1，9，9」で答えを求める例
+#       「  1 1 9 1 make10  」
 #
 
-#" ten_single_by_4nums" package			# to set all these definitions are defined 
+
+# "make10" package			# to set all these definitions are defined
 
 
 
@@ -224,53 +236,6 @@
     <g_stack =target sort uniq
 ;
 
-
-: get_an_item_from_stack    # takes a stack
-    =target >a <a rot k} pop <a
-;
-
-
-##########
-##
-##  combination routines
-##
-##########
-
-
-: combination    # takes two stacks
-
-#    { "A" "B" "C" "D" k} { 1 2 3 k} # for testing
-
-    >beta
-    >alpha
-    
-    <alpha =target
-    depth >alpha_depth
-    k} pop
-
-    <beta =target
-        depth >beta_depth
-    k} pop
-
-    {
-        <alpha_depth times
-        :@
-            <alpha get_an_item_from_stack
-            >alpha_char
-
-            <beta_depth times
-            :@
-                <alpha_char
-                <beta get_an_item_from_stack
-                gs =ppush
-                #"\n" gs gs . pop
-            ;
-
-        ;
-    }
-;
-
-
 : make10
     permutation{ k}     # permutation calc. the result will be saved on variable "g_stack"
     cl
@@ -292,6 +257,7 @@
 
         forget /
     }
+    stack
 ;
 
 

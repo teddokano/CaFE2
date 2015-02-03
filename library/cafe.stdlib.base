@@ -163,6 +163,7 @@
 ;
 
 
+
 #............................................................defining FUNCTIONS
 #............... string utilities 
 
@@ -337,5 +338,48 @@
 
 print '"FILENAME_TO_REPLACE" loaded\n'        ### messege to identify the loading completed successfully
 
+
+##########
+##
+##  combination routines
+##
+##########
+
+: get_an_item_from_stack    # takes a stack
+    =target >a <a rot k} pop <a
+;
+
+: combination    # takes two stacks
+
+    #    { "A" "B" "C" "D" k} { 1 2 3 k} # for testing
+
+    >beta
+    >alpha
+
+    <alpha =target
+        depth >alpha_depth
+    k} pop
+
+    <beta =target
+        depth >beta_depth
+    k} pop
+
+    {
+        <alpha_depth times
+        :@
+            <alpha get_an_item_from_stack
+            >alpha_char
+
+            <beta_depth times
+            :@
+                <alpha_char
+                <beta get_an_item_from_stack
+                gs =ppush
+                #"\n" gs gs . pop
+            ;
+
+        ;
+    }
+;
 
 
