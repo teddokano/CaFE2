@@ -296,5 +296,7 @@ pop
 
 print '".cafe" loaded\n'	### messege to identify the loading completed successfully
 
+#:load10 "~/dev/CaFE2/samples/ten_by_4nums.cafe" use;
+:load10 <$$SOURCE_FILES_DIRECTORY$ "/samples/make10.cafe" glue use;
 
 
