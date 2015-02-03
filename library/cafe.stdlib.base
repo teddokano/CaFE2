@@ -169,13 +169,13 @@
 :map								# apply function to all stack items
 		(s1-as_function -- )
 		>function
-		depth times '<function eval rot'
+		depth times '<function [ eval ] rot'
 ;		
 
 :gather								# gathering stack items
 		(s1-as_function -- )
 		>function
-		depth 1- times '<function eval'
+		depth 1- times '<function [ eval ]'
 ;		
 
 

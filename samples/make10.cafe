@@ -1,0 +1,298 @@
+#
+#  0から9までの4つの数字を1度ずつ+-*/の計算を行うことによって10を作り出すゲームの答えを求める．
+#
+#	関数「 ten_single_by_4nums」はスタック上の4つの数値をとり，この4つの数字でできる24通りのすべての順列を作り出す．
+#		一つの順列ができる度に，関数「 m10_single」を呼び出す．
+# 
+#	関数「 m10_single」はスタック上の4つの数値をとり，この順番に従った計算を行う．数値の計算は64通りあるが，これを
+#		すべて行ってみて，10になるものを発見すると，その計算式を表示する．10になるまでに分数的な過程を
+#		経るものはその表示も行う．
+#		(A+B)*(C+D)のような計算を行うために64回の計算の中で，最初の演算の結果を「rot」する計算を追加した．
+#
+#	このプログラムはcafeの可能性を確認する目的だけのために作成された．速度的な最適化は一切行われていない．
+#
+#	01-Sep-2006
+#	23-Jun-2010  "-" "/" の演算順についての扱いのためswapを挿入することにした
+#	30-Jan-2015  ユーザビリティのための改善
+#
+#
+
+#" ten_single_by_4nums" package			# to set all these definitions are defined 
+
+
+
+##########
+##
+##  make10 routines
+##
+##########
+
+:get_operator
+		"+-*/"
+		swap
+		nth_char
+;
+
+:try_swap
+	>position
+	>calc_b
+	
+	<calc_b < position nth_word >op
+	<op "-" compare
+	<op "/" compare
+	or
+
+	ifelse p
+	:@
+		pop
+		<calc_b
+		"swap" <position nth_insert_word
+	;
+	:@
+		pop
+		<calc_b
+	;
+;
+
+: operations
+	{
+		0 >counter
+		
+		64 times 
+		:@
+			### make calculation
+			<counter  1 / get_operator
+			<counter  4 / get_operator
+			<counter 16 / get_operator
+			2 times glue
+			>calc_base
+			
+			<calc_base
+            >calc
+			<calc =ppush
+			
+#			cl
+
+			<calc_base "rot" 1 nth_insert_word >calc
+			<calc =ppush
+
+#			cl
+			
+			<calc_base
+			1 try_swap 
+            >calc
+			<calc =ppush
+
+#			cl
+
+			<calc_base
+			2 try_swap >calc
+			<calc =ppush
+
+#			cl
+
+			<calc_base
+			2 try_swap
+			>calc_base <calc_base
+			1 try_swap
+			>calc
+			<calc =ppush
+
+#			cl
+
+			<counter 1+ >counter
+		;
+	}
+    sort uniq
+;
+
+: ten_basic
+	:/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ;
+
+    "{" rot 
+    4 times gs >four_numbers
+    
+    operations
+    
+    "[ <four_numbers ] swap gs \"}\" gs" map     # [] are not required for new 'map'
+
+    forget /
+;
+
+:check_the_result
+    >r
+	<r 10 compare ifp t   ## need to use "compare" to make sure the relult is INTEGER
+	:@
+        [ <expr ]
+        =ppush
+        # "\n" gs print ^
+	;
+			
+	<r 10.0 compare ifp t   ## need to use "compare" to make sure the relult is INTEGER
+	:@
+		[ <expr ] "  (fractional)" gs
+		=ppush
+        # "\n" gs print ^
+	;
+;
+
+: make_ten_core     # takes 4 numbers as string
+    >four_numbers
+    {
+        operations
+    
+        "<four_numbers swap gs" map
+    
+        depth times
+        :@
+            >expr { <expr eval }
+            check_the_result
+            rot
+        ;
+    }
+;
+
+: ten
+	:/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ;
+
+    3 times gs
+    make_ten_core
+
+    forget /
+
+    stack
+;
+
+
+##########
+##
+##  permutation routines
+##
+##########
+
+
+:permutation_global_def # variable prepared as Ni ('N' is a number)
+    depth >dp
+    {
+        1 <dp 1 - times 'dup 1 +'
+        "\"i\" glue quote" map
+        "\" global variable\" glue" map
+        "eval" map
+    }
+
+    "g_stack" global variable
+    { k} >g_stack
+;
+
+:=gpush
+    >tmp <g_stack =target <tmp =parent =target pop
+;
+
+:permutation_core
+    depth >dp <dp
+    times
+    :@
+        dup <dp "i" glue >^
+        >top permutation_core
+        <top
+        rot
+    ;
+    <dp 1 -
+    ifp z
+        '{ <1i <2i <3i <4i "gs" gather =gpush }'
+;
+
+:permutation_basic
+    depth >dp <dp
+    times
+    :@
+        " " print ^
+        .
+        dup >str
+        >top permutation
+        <top
+        rot
+    ;
+    <dp 1 -
+    ifp z               # if the depth is 1, it's a leaf call
+        '<str "\n" print ^'
+;
+
+:permutation{
+    permutation_global_def
+    permutation_core
+    <g_stack =target sort uniq
+;
+
+
+: get_an_item_from_stack    # takes a stack
+    =target >a <a rot k} pop <a
+;
+
+
+##########
+##
+##  combination routines
+##
+##########
+
+
+: combination    # takes two stacks
+
+#    { "A" "B" "C" "D" k} { 1 2 3 k} # for testing
+
+    >beta
+    >alpha
+    
+    <alpha =target
+    depth >alpha_depth
+    k} pop
+
+    <beta =target
+        depth >beta_depth
+    k} pop
+
+    {
+        <alpha_depth times
+        :@
+            <alpha get_an_item_from_stack
+            >alpha_char
+
+            <beta_depth times
+            :@
+                <alpha_char
+                <beta get_an_item_from_stack
+                gs =ppush
+                #"\n" gs gs . pop
+            ;
+
+        ;
+    }
+;
+
+
+: make10
+    permutation{ k}     # permutation calc. the result will be saved on variable "g_stack"
+    cl
+    {
+        <g_stack
+
+        { operations k}
+
+        combination
+
+        :/ ifelse z :@ pop pop 10000; :@ "'@/'" eval ; ;
+
+        depth times
+        :@
+            >expr { <expr eval }
+            check_the_result
+            rot
+        ;
+
+        forget /
+    }
+;
+
+
+
